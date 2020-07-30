@@ -9,11 +9,14 @@ BLAME_RATELIMIT = 69  # Minimum seconds between blames.
 def num_players(game: Game):
     return(len(game.players))
 
+
 def num_players_alive(game: Game):
-    return(len(filter(lambda player : not player.dead, game.players)))
+    return(len(filter(lambda player: not player.dead, game.players)))
+
 
 def num_players_dead(game: Game):
-    return(len(filter(lambda player : player.dead, game.players)))
+    return(len(filter(lambda player: player.dead, game.players)))
+
 
 def reset_blame_ratelimit(game):
     game.last_blame = time.time() - BLAME_RATELIMIT
@@ -35,8 +38,8 @@ def show_game(game: Game, things_to_show=None):
     - A separator                           "-"
     """
     if things_to_show is None:
-        things_to_show = ["liberal", "fascist", "br", "anarchy", "-", "players", "-", "deck_stats", "br",
-                            "hitler_warning"]
+        things_to_show = ["liberal", "fascist", "br", "anarchy", "-", "players", "-", "deck_stats",
+                          "br", "hitler_warning"]
     message = ""
     to_show, rest = things_to_show[0], things_to_show[1:]
     if to_show == "liberal":
@@ -76,6 +79,7 @@ def show_game(game: Game, things_to_show=None):
         message += "\n" + show_game(game, rest)
     return message
 
+
 def start_game(game: Game):
     """
     Starts a game:
@@ -89,39 +93,40 @@ def start_game(game: Game):
 
     game.reset_blame_ratelimit()
 
-    if False: # TESTING:
-        roles = ["Liberal", "Fascist", "Liberal", "Hitler", "Liberal", "Liberal", "Fascist", "Liberal", "Fascist",
-                    "Liberal"]
-        for i in range(len(self.players)):
-            self.players[i].set_role(roles[i])
-            # NOTE: testing configuration does not "notify" fascists of night-phase info (if this breaks, it'll be apparent pretty quickly)
-    else:
-        if game.num_players == 5 or game.num_players == 6:  # 1F + H
-            fascists = random.sample(game.players, 2)
-        elif game.num_players == 7 or game.num_players == 8:  # 2F + H
-            fascists = random.sample(game.players, 3)
-        elif game.num_players == 9 or game.num_players == 10:  # 3F + H
-            fascists = random.sample(game.players, 4)
-        else:
-            raise Exception("Invalid number of players")
+#    if False:  # TESTING:
+#        roles = ["Liberal", "Fascist", "Liberal", "Hitler", "Liberal", "Liberal", "Fascist", "Liberal", "Fascist",
+#                 "Liberal"]
+#        for i in range(len(self.players)):
+#            self.players[i].set_role(roles[i])
+#            # NOTE: testing configuration does not "notify" fascists of night-phase info (if this breaks, it'll be apparent pretty quickly)
+#    else:
 
-        for p in game.players:
-            if p == fascists[0]:
-                p.set_role("Hitler")
-                if game.num_players <= 6:
-                    p.send_message("Fascist: {}".format(fascists[1]))
-            elif p in fascists:
-                p.set_role("Fascist")
-                if game.num_players <= 6:
-                    p.send_message("Hitler: {}".format(fascists[0]))
-                else:
-                    p.send_message("Other Fascist{}: {}\nHitler: {}".format("s" if len(fascists) > 3 else "",
-                                                                            ", ".join(
-                                                                                [other_p.name for other_p in
-                                                                                    fascists[1:] if other_p != p]),
-                                                                            fascists[0]))
+    if game.num_players == 5 or game.num_players == 6:  # 1F + H
+        fascists = random.sample(game.players, 2)
+    elif game.num_players == 7 or game.num_players == 8:  # 2F + H
+        fascists = random.sample(game.players, 3)
+    elif game.num_players == 9 or game.num_players == 10:  # 3F + H
+        fascists = random.sample(game.players, 4)
+    else:
+        raise Exception("Invalid number of players")
+
+    for p in game.players:
+        if p == fascists[0]:
+            p.set_role("Hitler")
+            if game.num_players <= 6:
+                p.send_message("Fascist: {}".format(fascists[1]))
+        elif p in fascists:
+            p.set_role("Fascist")
+            if game.num_players <= 6:
+                p.send_message("Hitler: {}".format(fascists[0]))
             else:
-                p.set_role("Liberal")
+                p.send_message("Other Fascist{}: {}\nHitler: {}".format("s" if len(fascists) > 3 else "",
+                                                                        ", ".join(
+                                                                            [other_p.name for other_p in
+                                                                                fascists[1:] if other_p != p]),
+                                                                        fascists[0]))
+        else:
+            p.set_role("Liberal")
 
     game.record_log("ROLES:", known_to=[game.players])
     for player in game.players:
@@ -839,10 +844,6 @@ def get_blocked_player(self, test_msg="Trying to start game!"):
             return p
     return None
 
-ACCEPTED_COMMANDS = ("listplayers", "changename", "startgame",
-                        "boardstats", "deckstats", "anarchystats", "blame", "ja", "nein",
-                        "nominate", "kill", "investigate", "enact", "discard", "whois",
-                        "spectate", "unspectate", "logs", "timelogs")
 
 def handle_message(self, chat_id, from_player, command, args=""):
     """

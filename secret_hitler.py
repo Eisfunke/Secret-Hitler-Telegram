@@ -29,11 +29,12 @@ def strip_non_printable(s):
 
 with open("config/username", "r") as f:
     BOT_USERNAME = f.read().rstrip()
-TESTING = (__name__ == "__main__")  # test whenever this file is run directly
-# set TESTING to True to simulate a game locally
-if not TESTING:
 
-    telegram_errors = []
+# TESTING = (__name__ == "__main__")  # test whenever this file is run directly
+# set TESTING to True to simulate a game locally
+# if not TESTING:
+
+#    telegram_errors = []
 
     # unnecessary in TESTING mode
 

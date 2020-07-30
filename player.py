@@ -2,23 +2,26 @@
 
 from model import Player
 
-def send_message(self, msg, supress_errors=True, reply_markup=None):
-    if TESTING:
-        print("[ Message for {} ]\n{}".format(self, msg))
-    else:
-        try:
-            bot_telegram.bot.send_message(chat_id=self.id, text=msg, reply_markup=reply_markup)
-        except TelegramError as e:
-            if supress_errors:
-                telegram_errors.append(e)
-                # network issues can cause errors in Telegram
-            else:
-                raise e
 
-def get_markdown_tag(self):
+def send_message(self: Player, msg, supress_errors=True, reply_markup=None):
+#    if TESTING:
+#        print("[ Message for {} ]\n{}".format(self, msg))
+#    else:
+    try:
+        bot_telegram.bot.send_message(chat_id=self.id, text=msg, reply_markup=reply_markup)
+    except TelegramError as e:
+        if supress_errors:
+            telegram_errors.append(e)
+            # network issues can cause errors in Telegram
+        else:
+            raise e
+
+
+def get_markdown_tag(self: Player):
     return "[{}](tg://user?id={})".format(self.name, self.id)
 
-def set_role(self, _role):
+
+def set_role(self: Player, _role):
     """
     Sets a user's role/party affiliation and notifies them about it.
     """
@@ -26,12 +29,14 @@ def set_role(self, _role):
     self.party = _role.replace("Hitler", "Fascist")
     self.send_message("Your secret role is {}".format(self.role))
 
-def join_game(self, _game):
-    if self.leave_game(confirmed=False):
+
+def join_game(self: Player, _game):
+    if leave_game(self, confirmed=False):
         self.game = _game
         return True
     else:
         return False  # user must first deal with leaving their current game
+
 
 def leave_game(self, confirmed=False):
     if self.game is None:

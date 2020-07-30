@@ -1,2 +1,2 @@
-telegram
+python-telegram-bot
 sqlalchemy
