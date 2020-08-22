@@ -8,7 +8,6 @@ import enum
 
 class GameState(enum.Enum):
     """Enum for the different states a game can be in."""
-
     ACCEPT_PLAYERS = 1     # Game has not started yet and is accepting player entries.
     CHANCY_NOMINATION = 2  # The president has to nominate a chancellor.
     ELECTION = 3           # There is an ongoing election.
@@ -40,7 +39,7 @@ Base = declarative_base()
 
 
 class Game(Base):
-    """Main class. An instance represents a single game of Secret Hitler."""
+    """Represents a single game of Secret Hitler."""
     __tablename__ = "games"
 
     def __init__(self, chat):
@@ -50,17 +49,16 @@ class Game(Base):
     chat = Column(Integer, primary_key=True)
 
     # The participating players.
-    players = relationship("Player", foreign_keys="[Player.game_id]",
+    players = relationship("Player", foreign_keys="[Player.game_chat]",
                            cascade="all, delete, delete-orphan")
 
-    cards = relationship("Card")  # Cards on the deck.
+    cards = relationship("Card", cascade="all, delete, delete-orphan")  # Cards on the deck.
     discards = relationship("Discard")  # Discarded policies.
 
     president_id = Column(Integer, ForeignKey("players.id"))
-    president = relationship("Player", foreign_keys="[Game.president_id]")  # Current president.
-
+    president = relationship("Player", foreign_keys="[Player.game_chat]")  # Current president.
     chancellor_id = Column(Integer, ForeignKey("players.id"))
-    chancellor = relationship("Player", foreign_keys="[Game.chancellor_id]")  # Current chancellor.
+    chancellor = relationship("Player", foreign_keys="[Player.game_chat]")  # Current chancellor.
 
     last_nonspecial_president_id = Column(Integer, ForeignKey("players.id"))
     last_nonspecial_president = relationship("Player",
@@ -70,9 +68,10 @@ class Game(Base):
     spectators = relationship("Spectator", cascade="all, delete, delete-orphan")
 
     # time_logs = relationship("TimeLog")
-    logs = relationship("Log")
+    # logs = relationship("Log")
 
-    votes = relationship("Vote")
+    votes = relationship("Vote", foreign_keys="[Vote.game_id]",
+                         cascade="all, delete, delete-orphan")
 
     vetoable_policy = Column(Enum(Policy))
     president_veto_vote = Column(Boolean)
@@ -85,9 +84,9 @@ class Game(Base):
     state = Column(Enum(GameState), default=GameState.ACCEPT_PLAYERS)
 
 
-log_player_table = Table("association", Base.metadata,
-                         Column("log", Integer, ForeignKey("logs.id")),
-                         Column("player", Integer, ForeignKey("players.id")))
+#log_player_table = Table("association", Base.metadata,
+#                         Column("log", Integer, ForeignKey("logs.id")),
+#                         Column("player", Integer, ForeignKey("players.id")))
 
 
 class Player(Base):
@@ -116,7 +115,7 @@ class Player(Base):
     confirmed_not_hitler = Column(Boolean)
     dead = Column(Boolean)
 
-    known_logs = relationship("Log", secondary=log_player_table, back_populates="known_to")
+    #known_logs = relationship("Log", secondary=log_player_table, back_populates="known_to")
 
 
 class Spectator(Base):
@@ -128,13 +127,23 @@ class Spectator(Base):
     game = relationship("Game", back_populates="spectators")
 
 
-class Card(Base):
-    __tablename__ = "cards"
+class Vote(Base):
+    """Represents a single vote."""
+    __tablename__ = "votes"
 
     id = Column(Integer, primary_key=True)
 
-    game_chat = Column(Integer, ForeignKey("games.chat"), nullable=False)
+    game_chat = Column(Integer, ForeignKey("games.chat"))
 
+    player_id = Column(Integer, ForeignKey("players.id"), nullable=False)
+
+    vote = Column(Boolean, nullable=False)
+
+
+class Card(Base):
+    __tablename__ = "cards"
+    id = Column(Integer, primary_key=True)
+    game_chat = Column(Integer, ForeignKey("games.chat"), nullable=False)
     policy = Column(Enum(Policy))
 
 
@@ -148,7 +157,7 @@ class Discard(Base):
     policy = Column(Enum(Policy))
 
 
-class Log(Base):
+"""class Log(Base):
     __tablename__ = "logs"
 
     id = Column(Integer, primary_key=True)
@@ -161,6 +170,7 @@ class Log(Base):
     # Only lists players, not spectators, they have to be handled seperately
     known_to = relationship("Player", secondary=log_player_table, back_populates="known_logs")
     known_to_group = Column(Boolean)
+"""
 
 """ TODO Implement time logs
 class TimeLog(Base):
@@ -173,18 +183,3 @@ class TimeLog(Base):
 
     # time_logs : List<Map<GameState, Map<Player,Timestamp>>>
 """
-
-
-class Vote(Base):
-    """Represents a single vote."""
-    __tablename__ = "votes"
-
-    id = Column(Integer, primary_key=True)
-
-    game_id = Column(Integer, ForeignKey("games.id"), nullable=False)
-    game = relationship("Game", back_populates="votes")
-
-    player_id = Column(Integer, ForeignKey("players.id"), nullable=False)
-    player = relationship("Player")
-
-    vote = Column(Boolean, nullable=False)

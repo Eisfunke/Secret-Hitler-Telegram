@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import logging
 import os
@@ -15,12 +14,7 @@ from telegram import Update
 from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler
 from telegram.error import TelegramError
 
-
-with open("config/key", "r") as file:
-    API_KEY = file.read().rstrip()
-
-with open("config/devchat", "r") as file:
-    DEV_CHAT_ID = int(file.read().rstrip())
+DEV_CHAT_ID = int(os.environ["SECRET_HITLER_BOT_DEVCHAT"])
 
 updater = Updater(os.environ["SECRET_HITLER_BOT_TOKEN"], use_context=True)
 # restored_players = {}
@@ -80,7 +74,8 @@ def main():
         level=logging.INFO)  # not sure exactly how this works
 
     updater.start_polling()
-    updater.bot.send_message(chat_id=DEV_CHAT_ID, text="Bot started successfully!")
+#    updater.bot.send_message(chat_id=DEV_CHAT_ID, text="Good morning, comrades! \
+#                                                        The bot has started. Let's crush fascism.\n\nbtw: richard ist ein frechdachs")
 
 
 def split_message(message, length=MAX_MESSAGE_LENGTH):

@@ -1,4 +1,4 @@
-# Secret Hitler: Telegram
+# Secret Hitler Bot for Telegram
 
 **A Telegram bot that allows users to play [Secret Hitler](https://www.secrethitler.com/).**
 
@@ -26,6 +26,6 @@ To get the bot working, you need to create the folder `config` and place these f
 
 ## License and Attribution
 
-Secret Hitler is designed by Max Temkin, Mike Boxleiter, Tommy Maranges and illustrated by Mackenzie Schubert.
+[Secret Hitler](https://www.secrethitler.com/) was designed by Max Temkin, Mike Boxleiter, Tommy Maranges and illustrated by Mackenzie Schubert.
 
-The game and therefore this bot as well are licensed as per the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/) license.
+The game and therefore this bot are licensed as per the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/) license.
